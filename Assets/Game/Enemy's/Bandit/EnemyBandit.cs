@@ -2,8 +2,8 @@ using UnityEngine;
 using System;
 public class EnemyBandit : MonoBehaviour
 {
-    //[SerializeField] private float lifeEnemy = 2f;
-    [SerializeField] private float speedEnemy = 3;
+    [SerializeField] private int lifeEnemy = 2;
+    [SerializeField] private float speedEnemy = 3f;
     [SerializeField] private float timeToAttack = 1f;
     private float timeAttackCounter = 1f;
     private Transform findPlayer;
@@ -26,6 +26,10 @@ public class EnemyBandit : MonoBehaviour
             EnemyAttack();
         }
     }
+    public void TakeDamage()
+    {
+
+    }
     private void EnemyAttack()
     {
         timeAttackCounter += Time.deltaTime;
@@ -33,7 +37,8 @@ public class EnemyBandit : MonoBehaviour
         {
             timeAttackCounter = 0;
             _animator.SetTrigger("Attack");
-            //урон
+            
+
         }
     }
     void EnemyMove()
@@ -56,4 +61,5 @@ public class EnemyBandit : MonoBehaviour
         }
         else _animator.SetBool("Run", false);
     }
+    
 }

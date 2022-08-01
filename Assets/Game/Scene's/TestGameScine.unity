@@ -242,8 +242,40 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 519420032}
+  - {fileID: 97626281}
   m_Father: {fileID: 0}
   m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &97626280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 97626281}
+  m_Layer: 0
+  m_Name: Attack Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &97626281
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97626280}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 44688891}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &137985134
 GameObject:
@@ -3007,6 +3039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c44692dc4221794d8b368766f98bad1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lifeEnemy: 2
   speedEnemy: 2
   timeToAttack: 1
 --- !u!50 &1330489658
@@ -3221,8 +3254,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47bf6910fa92e9140820d3d0d8c6a841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedPlayer: 4
-  timeToAttack: 0.5
+  moveSpeedHero: 3
+  timeToAttackHero: 1
+  lifeHero: 10
+  attackRangeHero: 5
+  damageHero: 1
 --- !u!70 &6635208486402273569
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

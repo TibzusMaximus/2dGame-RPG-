@@ -2,17 +2,24 @@ using UnityEngine;
 using System;
 public class EnemyBandit : MonoBehaviour
 {
+    //Здоровье и скорость
     [SerializeField] private int maxHealthBandit = 3;
     private int healthBandit = 0;
     [SerializeField] private float moveSpeedBandit = 3f;
+    //Атака
     [SerializeField] private float attackSpeedBandit = 1f;
-    private float timeAttackCounter = 1f;
-    private Transform findPlayer;
+    private float timeToAttack = 1f;
+    [SerializeField] private int attackDamageBandit = 1;
+    [SerializeField] private float attackRangeBandit = 1f;
+    [SerializeField] private Transform _attackPoint;
+    [SerializeField] private LayerMask _playerLayers;
+    //Компоненты
+    private Transform _findPlayer;
     private Animator _animator;
     private SpriteRenderer _sprite;
     void Start()
     {
-         findPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        _findPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
         healthBandit = maxHealthBandit;
@@ -20,50 +27,73 @@ public class EnemyBandit : MonoBehaviour
     void Update()
     {
         BanditMove();
-        //BanditAttack();
+        BanditAttack();
+    }
+    private void OnDrawGizmosSelected()
+    {//Отображение зоны атаки
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(_attackPoint.position, attackRangeBandit);
     }
     public void BanditTakeDamage(int damage)
     {
         healthBandit -= damage;
-        Debug.Log("Damage = " + damage);
         _animator.SetTrigger("Hurt");
         if (healthBandit <= 0)
             BanditDeath();
     }
-    private void BanditDeath()
+    void BanditDeath()
     {
         _animator.SetBool("IsDeath", true);
         Destroy(this.gameObject, 1);
         GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
     }
-    private void BanditAttack()
+    void BanditAttack()
     {
-        timeAttackCounter += Time.deltaTime;
-        if (timeAttackCounter > attackSpeedBandit)
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(_attackPoint.position,
+                attackRangeBandit, _playerLayers);
+        foreach (Collider2D enemy in hitEnemies)
         {
-            timeAttackCounter = 0;
-            _animator.SetTrigger("Attack");
-            
-
+            timeToAttack += Time.deltaTime;
+            if (timeToAttack > attackSpeedBandit)
+            {
+                timeToAttack = 0;
+                _animator.SetTrigger("Attack");
+                enemy.GetComponent<PlayerHero>().HeroTakeDamage(attackDamageBandit);
+                Debug.Log("Bandit hit palyer");
+            }
         }
     }
     void BanditMove()
     {//если враг на расстоянии 5 по х и у, то он движется к игроку
-        if ( Math.Abs(transform.position.x - findPlayer.position.x) < 5 
-            && Math.Abs(transform.position.y - findPlayer.position.y) < 5)
+        if ( Math.Abs(transform.position.x - _findPlayer.position.x) < 5 
+            && Math.Abs(transform.position.y - _findPlayer.position.y) < 5)
         {
             transform.position = Vector2.MoveTowards(transform.position,
-                findPlayer.position + new Vector3(1,1,0), moveSpeedBandit * Time.deltaTime);
-            if (transform.position.x < findPlayer.position.x) //игрок справа
+                _findPlayer.position + new Vector3(1,1,0), moveSpeedBandit * Time.deltaTime);
+            if (transform.position.x < _findPlayer.position.x) //игрок справа
              {
-                 _animator.SetBool("IsRun", true);
-                 _sprite.flipX = false;
+                if (_attackPoint.position.x < transform.position.x)
+                {
+                    _attackPoint.transform.position = new Vector2(gameObject.transform.position.x + 0.5f,
+                        gameObject.transform.position.y);
+                }
+                _sprite.flipX = false;
+                if (Math.Abs(transform.position.x - _findPlayer.position.x) < 1.5f)
+                    _animator.SetBool("IsRun", false);
+                else _animator.SetBool("IsRun", true);
              }
-             else if (transform.position.x > findPlayer.position.x)//игрок слева
+             else if (transform.position.x > _findPlayer.position.x)//игрок слева
              {
-                 _animator.SetBool("IsRun", true);
-                 _sprite.flipX = true;
+                if (_attackPoint.position.x > transform.position.x)
+                {
+                    _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 0.5f,
+                        gameObject.transform.position.y);
+                }
+                _sprite.flipX = true;
+                if (Math.Abs(transform.position.x - _findPlayer.position.x) < 1.5f)
+                    _animator.SetBool("IsRun", false);
+                else _animator.SetBool("IsRun", true);
              }
         }
         else _animator.SetBool("IsRun", false);

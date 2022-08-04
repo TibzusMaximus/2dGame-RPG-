@@ -60,7 +60,6 @@ public class EnemyBandit : MonoBehaviour
                 timeToAttack = 0;
                 _animator.SetTrigger("Attack");
                 enemy.GetComponent<PlayerHero>().HeroTakeDamage(attackDamageBandit);
-                Debug.Log("Bandit hit palyer");
             }
         }
     }

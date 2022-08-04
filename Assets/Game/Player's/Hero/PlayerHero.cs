@@ -4,30 +4,38 @@ public class PlayerHero : MonoBehaviour
     [Header("Здоровье")]
     [SerializeField] private int maxHealthHero = 5;
     private int healthHero = 0;
+
     [Header("Скорость")]
     [SerializeField] private int moveSpeedHero = 3;
+
     [Header("Атака")]
     [SerializeField] private float attackSpeedHero = 1f;
     private float timeToAttack = 1f;
+    private bool isSoundSword = false;
     [SerializeField] private int attackDamageHero = 1;
     [SerializeField] private float attackRangeHero = 1.2f;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private LayerMask _enemyLayers;
+
+    [Header("Звуки")]
+    private bool isSoundWalk = false;
+    private AudioSource _audioSource;
+    [SerializeField] private AudioClip _stepClip;
+    [SerializeField] private AudioClip _attackClip;
+
     //[Header("Защита")]
     //[SerializeField] private float blockRetention = 0f;//время удержания блока
-    static private float timeToBlock = 1.1f; // время ненажатия
+    //static private float timeToBlock = 1.1f; // время ненажатия
+
     //Компоненты
     private Animator _animator;
     private SpriteRenderer _sprite;
-    [Header("Звуки")]
-    public AudioSource _step;
-    public AudioSource _attack;
 
     void Start()
-    {
-        // Debug.Log("Time:" + timeToBlock);
+    {// Debug.Log("Time:" + timeToBlock);
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
+        _audioSource = GetComponent<AudioSource>();
         healthHero = maxHealthHero;
     }
     void Update()
@@ -43,37 +51,26 @@ public class PlayerHero : MonoBehaviour
     }
     void HeroBlockAttack()
     {
-        if (Input.GetKey(KeyCode.E))//
+        if (Input.GetKey(KeyCode.E))
         {
-            timeToBlock = 0;
             _animator.SetTrigger("BlockActive");
-        }
-        else
-        {
-            timeToBlock += Time.deltaTime;
-           // _animator.SetTrigger("BlockActive", false);
+            SoundWalkStop();
         }
     }
     public void HeroTakeDamage(int damage)
     {
-        if (!Input.GetKey(KeyCode.E) && (timeToBlock > 0.1))
-        {
+        if (!Input.GetKey(KeyCode.E))
+        {//Если блок не активен
             healthHero -= damage;
             _animator.SetTrigger("Hurt");
             if (healthHero <= 0)
                 HeroDeath();
         }
     }
-    void HeroDeath()
-    {
-        _animator.SetBool("IsDeath", true);
-        GetComponent<Collider2D>().enabled = false;
-        enabled = false;
-    }
     void HeroAttack()
     {
-        if (!Input.GetKey(KeyCode.E) && (timeToBlock > 0.1))
-        {
+        if (!Input.GetKey(KeyCode.E))
+        {//Если блок не активен
             Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(_attackPoint.position,
                             attackRangeHero, _enemyLayers);
             foreach (Collider2D enemy in hitEnemies)
@@ -82,43 +79,98 @@ public class PlayerHero : MonoBehaviour
                 if (timeToAttack > attackSpeedHero)
                 {
                     timeToAttack = 0;
+                    SoundSwordStart();
                     _animator.SetTrigger("Attack");
                     enemy.GetComponent<EnemyBandit>().BanditTakeDamage(attackDamageHero);
                 }
+                else isSoundSword = false;
             }
         }
     }
     void HeroMove()
     {
-        //Debug.Log("Time:" + timeToBlock);
-        float XInput = Input.GetAxis("Horizontal");
-            float YInput = Input.GetAxis("Vertical");
-        if (!Input.GetKey(KeyCode.E) && (timeToBlock > 0.1))
-        {
-            transform.Translate(moveSpeedHero * Time.deltaTime * XInput * Vector2.right);
-            transform.Translate(moveSpeedHero * Time.deltaTime * YInput * Vector2.up);
-            if (XInput > 0)
-            {
-                
-                if (_attackPoint.position.x < transform.position.x)
-                {
-                    _attackPoint.transform.position = new Vector2(gameObject.transform.position.x + 1,
-                        gameObject.transform.position.y + 1);
-                }
+        float inputX = Input.GetAxis("Horizontal");
+        float inputY = Input.GetAxis("Vertical");
+        if (!Input.GetKey(KeyCode.E))
+        {//Если блок не активен
+            transform.Translate(moveSpeedHero * Time.deltaTime * inputX * Vector2.right);
+            transform.Translate(moveSpeedHero * Time.deltaTime * inputY * Vector2.up);
+            if (inputX > 0)
+            {//движение вправо
+                MoveAttackPointRight();
+                SoundWalkStart();
                 _animator.SetBool("IsRun", true);
                 _sprite.flipX = false;
             }
-            else if (XInput < 0)
-            {
-                if (_attackPoint.position.x > transform.position.x)
-                {
-                    _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 1,
-                        gameObject.transform.position.y + 1);
-                }
+            else if (inputX < 0)
+            {//движение влево
+                SoundWalkStart();
+                MoveAttackPointLeft();
                 _animator.SetBool("IsRun", true);
                 _sprite.flipX = true;
             }
-            else _animator.SetBool("IsRun", false);
+            else if (inputY != 0)
+            {//движение вверх и вниз
+                _animator.SetBool("IsRun", true);
+                SoundWalkStart();
+            }
+            else
+            {
+                _animator.SetBool("IsRun", false);
+                SoundWalkStop();
+            }
         }
-    }        
+    }
+    void SoundSwordStart()
+    {
+        if (!isSoundSword)
+        {
+            _audioSource.clip = _attackClip;            
+            _audioSource.Play();
+            isSoundSword = true;
+        }
+    }
+    void HeroDeath()
+    {
+        _animator.SetBool("IsDeath", true);
+        GetComponent<Collider2D>().enabled = false;
+        enabled = false;
+    }
+    void SoundWalkStart()
+    {
+        if (!isSoundWalk)
+        {
+            _audioSource.clip = _stepClip;
+            _audioSource.loop = true;
+            _audioSource.pitch = 0.85f;
+            _audioSource.Play();
+            isSoundWalk = true;
+        }
+    }
+    void SoundWalkStop()
+    {
+        if (isSoundWalk)
+        {
+            _audioSource.Stop();
+            _audioSource.clip = null;
+            _audioSource.loop = false;
+            isSoundWalk = false;
+        }
+    }
+    void MoveAttackPointRight()
+    {
+        if (_attackPoint.position.x < transform.position.x)
+        {
+            _attackPoint.transform.position = new Vector2(gameObject.transform.position.x + 1,
+                gameObject.transform.position.y + 1);
+        }
+    }
+    void MoveAttackPointLeft()
+    {
+        if (_attackPoint.position.x > transform.position.x)
+        {
+            _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 1,
+                gameObject.transform.position.y + 1);
+        }
+    }
 }

@@ -58,3 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+/Assets/Free UI build package
+/Assets/GUI_Parts
+/Assets/Free UI build package.meta
+/Assets/GUI_Parts.meta

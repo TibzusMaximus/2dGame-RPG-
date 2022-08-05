@@ -4,6 +4,7 @@ public class PlayerHero : MonoBehaviour
     [Header("Здоровье")]
     [SerializeField] private int maxHealthHero = 5;
     private int healthHero = 0;
+    [SerializeField] private HealthBar _healthBar;
 
     [Header("Скорость")]
     [SerializeField] private float moveSpeedHero = 4f;
@@ -32,28 +33,27 @@ public class PlayerHero : MonoBehaviour
     //Компоненты
     private Animator _animator;
     private SpriteRenderer _sprite;
-    //private Rigidbody2D rb2d;
     
+    //private Rigidbody2D rb2d;
+
 
     void Start()
     {// Debug.Log("Time:" + timeToBlock);
+        //Time.timeScale = 1;
+        //rb2d = GetComponent<Rigidbody2D>();
 
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
         _audioSource = GetComponent<AudioSource>();
-        //rb2d = GetComponent<Rigidbody2D>();
-
-        //Time.timeScale = 1;
+        
         healthHero = maxHealthHero;
+        _healthBar.SetMaxHealth(maxHealthHero);
     }
     void Update()
     {
+        HeroMove();
         HeroAttack();
         HeroBlockAttack();
-    }
-    private void FixedUpdate()
-    {
-        HeroMove();
     }
     void OnDrawGizmosSelected()
     {
@@ -73,6 +73,7 @@ public class PlayerHero : MonoBehaviour
         if (!Input.GetKey(KeyCode.E))
         {//Если блок не активен
             healthHero -= damage;
+            _healthBar.SetCurrentHealth(healthHero);
             _animator.SetTrigger("Hurt");
             if (healthHero <= 0)
                 HeroDeath();

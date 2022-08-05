@@ -7,8 +7,8 @@ public class PlayerHero : MonoBehaviour
 
     [Header("Скорость")]
     [SerializeField] private float moveSpeedHero = 4f;
-    private Vector2 moveInput;
-    private Vector2 moveVelocity;
+    //private Vector2 moveInput;
+    //private Vector2 moveVelocity;
 
     [Header("Атака")]
     [SerializeField] private float attackSpeedHero = 1f;
@@ -32,7 +32,7 @@ public class PlayerHero : MonoBehaviour
     //Компоненты
     private Animator _animator;
     private SpriteRenderer _sprite;
-    private Rigidbody2D rb2d;
+    //private Rigidbody2D rb2d;
     
 
     void Start()
@@ -41,7 +41,7 @@ public class PlayerHero : MonoBehaviour
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
         _audioSource = GetComponent<AudioSource>();
-        rb2d = GetComponent<Rigidbody2D>();
+        //rb2d = GetComponent<Rigidbody2D>();
 
         //Time.timeScale = 1;
         healthHero = maxHealthHero;
@@ -94,7 +94,7 @@ public class PlayerHero : MonoBehaviour
                     _animator.SetTrigger("Attack");
                     enemy.GetComponent<EnemyBandit>().BanditTakeDamage(attackDamageHero);
                 }
-                else isSoundSword = false;
+                else SoundSwordStop();
             }
         }
     }
@@ -141,6 +141,12 @@ public class PlayerHero : MonoBehaviour
             }
         }
     }
+    void HeroDeath()
+    {
+        _animator.SetBool("IsDeath", true);
+        GetComponent<Collider2D>().enabled = false;
+        enabled = false;
+    }
     void SoundSwordStart()
     {
         if (!isSoundSword)
@@ -150,11 +156,10 @@ public class PlayerHero : MonoBehaviour
             isSoundSword = true;
         }
     }
-    void HeroDeath()
+    void SoundSwordStop()
     {
-        _animator.SetBool("IsDeath", true);
-        GetComponent<Collider2D>().enabled = false;
-        enabled = false;
+        isSoundSword = false;
+        _audioSource.loop = false;
     }
     void SoundWalkStart()
     {
@@ -163,6 +168,7 @@ public class PlayerHero : MonoBehaviour
             _audioSource.clip = _stepClip;
             _audioSource.loop = true;
             _audioSource.pitch = 0.85f;
+            _audioSource.volume = 0.5f;
             _audioSource.Play();
             isSoundWalk = true;
         }
@@ -172,7 +178,7 @@ public class PlayerHero : MonoBehaviour
         if (isSoundWalk)
         {
             _audioSource.Stop();
-            _audioSource.clip = null;
+            //_audioSource.clip = null;
             _audioSource.loop = false;
             isSoundWalk = false;
         }
@@ -181,16 +187,16 @@ public class PlayerHero : MonoBehaviour
     {
         if (_attackPoint.position.x < transform.position.x)
         {
-            _attackPoint.transform.position = new Vector2(gameObject.transform.position.x + 1,
-                gameObject.transform.position.y + 1);
+            _attackPoint.transform.position = new Vector2(transform.position.x + 1,
+                transform.position.y);
         }
     }
     void MoveAttackPointLeft()
     {
         if (_attackPoint.position.x > transform.position.x)
         {
-            _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 1,
-                gameObject.transform.position.y + 1);
+            _attackPoint.transform.position = new Vector2(transform.position.x - 1,
+                transform.position.y);
         }
     }
 }

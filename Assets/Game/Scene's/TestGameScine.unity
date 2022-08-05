@@ -270,7 +270,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 97626280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 1, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -468,7 +468,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -11113,7 +11113,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1912000853
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11155,19 +11155,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 36
+    m_Font: {fileID: 12800000, guid: f3847628f797e434ca6aa58108a088fd, type: 3}
+    m_FontSize: 64
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 3
-    m_MaxSize: 40
+    m_MaxSize: 64
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Pause
+  m_Text: "\u041F\u0430\u0443\u0437\u0430"
 --- !u!222 &1912000855
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11292,8 +11292,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.6}
-  m_Size: {x: 0.8, y: 1.5}
+  m_Offset: {x: 0, y: -0.2}
+  m_Size: {x: 1, y: 1.4}
   m_Direction: 0
 --- !u!114 &6635208486402273574
 MonoBehaviour:
@@ -11307,9 +11307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47bf6910fa92e9140820d3d0d8c6a841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealthHero: 5
+  maxHealthHero: 10
   moveSpeedHero: 4
-  attackSpeedHero: 1
+  attackSpeedHero: 2
   attackDamageHero: 1
   attackRangeHero: 1.2
   _attackPoint: {fileID: 97626281}

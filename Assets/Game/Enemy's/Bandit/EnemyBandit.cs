@@ -88,7 +88,7 @@ public class EnemyBandit : MonoBehaviour
                 _animator.SetTrigger("Attack");
                 enemy.GetComponent<PlayerHero>().HeroTakeDamage(attackDamageBandit);
             }
-            else isSoundSword = false;
+            else SoundSwordStop();
         }
     }
     void BanditMove()
@@ -121,7 +121,7 @@ public class EnemyBandit : MonoBehaviour
     void EnemyNearPlayerStop()
     {//остановка анимации бега рядом с игроком
         if (Math.Abs(transform.position.x - _findPlayer.position.x) < 1.5f 
-            && Math.Abs(transform.position.y - _findPlayer.position.y) < 2)
+            && Math.Abs(transform.position.y - _findPlayer.position.y) < 1.5f)
         {
             moveSpeedBandit = 0;
             _animator.SetBool("IsRun", false);
@@ -178,5 +178,11 @@ public class EnemyBandit : MonoBehaviour
             isSoundSword = true;
             //возможно добавить питч
         }
+    }
+    void SoundSwordStop()
+    {
+        isSoundSword = false;
+        _audioSource.clip = null;
+        _audioSource.loop = false;
     }
 }

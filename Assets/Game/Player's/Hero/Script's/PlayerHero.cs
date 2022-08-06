@@ -1,30 +1,27 @@
 using UnityEngine;
+
 public class PlayerHero : MonoBehaviour
 {
     [Header("Здоровье")]
     [SerializeField] private int maxHealthHero = 5;
-    private int healthHero = 0;
     [SerializeField] private HealthBar _healthBar;
+    private int healthHero = 0;
 
     [Header("Скорость")]
     [SerializeField] private float moveSpeedHero = 4f;
-    //private Vector2 moveInput;
-    //private Vector2 moveVelocity;
 
     [Header("Атака")]
     [SerializeField] private float attackSpeedHero = 1f;
-    private float timeToAttack = 1f;
-    private bool isSoundSword = false;
     [SerializeField] private int attackDamageHero = 1;
     [SerializeField] private float attackRangeHero = 1.2f;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private LayerMask _enemyLayers;
+    private float timeToAttack = 1f;
 
-    [Header("Звуки")]
-    private bool isSoundWalk = false;
-    private AudioSource _audioSource;
-    [SerializeField] private AudioClip _stepClip;
-    [SerializeField] private AudioClip _attackClip;
+    [Header("Audio Source")]
+    [SerializeField] private AudioSource _audioStepsOrBlock;
+    [SerializeField] private AudioSource _audioSwordAttack;
+    [SerializeField] private AudioSource _audioHurtOrDeath;
 
     //[Header("Защита")]
     //[SerializeField] private float blockRetention = 0f;//время удержания блока
@@ -36,7 +33,6 @@ public class PlayerHero : MonoBehaviour
     
     //private Rigidbody2D rb2d;
 
-
     void Start()
     {// Debug.Log("Time:" + timeToBlock);
         //Time.timeScale = 1;
@@ -44,8 +40,7 @@ public class PlayerHero : MonoBehaviour
 
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
-        _audioSource = GetComponent<AudioSource>();
-        
+
         healthHero = maxHealthHero;
         _healthBar.SetMaxHealth(maxHealthHero);
     }
@@ -65,7 +60,7 @@ public class PlayerHero : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             _animator.SetTrigger("BlockActive");
-            SoundWalkStop();
+            _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundWalkStop();
         }
     }
     public void HeroTakeDamage(int damage)
@@ -75,9 +70,15 @@ public class PlayerHero : MonoBehaviour
             healthHero -= damage;
             _healthBar.SetCurrentHealth(healthHero);
             _animator.SetTrigger("Hurt");
+            _audioHurtOrDeath.GetComponent<AHurtOrDeath>().SoundHurtStart(0);
             if (healthHero <= 0)
                 HeroDeath();
         }
+        else if (damage > 0)
+        {//если враг атакует
+            _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundBlockStart();
+            //анимация
+        } 
     }
     void HeroAttack()
     {
@@ -91,11 +92,11 @@ public class PlayerHero : MonoBehaviour
                 if (timeToAttack > attackSpeedHero)
                 {
                     timeToAttack = 0;
-                    SoundSwordStart();
+                    _audioSwordAttack.GetComponent<ASwordAttack>().SoundSwordStart();
                     _animator.SetTrigger("Attack");
                     enemy.GetComponent<EnemyBandit>().BanditTakeDamage(attackDamageHero);
                 }
-                else SoundSwordStop();
+                else _audioSwordAttack.GetComponent<ASwordAttack>().SoundSwordStop();
             }
         }
     }
@@ -119,13 +120,13 @@ public class PlayerHero : MonoBehaviour
             if (inputX > 0)
             {//движение вправо
                 MoveAttackPointRight();
-                SoundWalkStart();
+                _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundWalkStart();
                 _animator.SetBool("IsRun", true);
                 _sprite.flipX = false;
             }
             else if (inputX < 0)
             {//движение влево
-                SoundWalkStart();
+                _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundWalkStart();
                 MoveAttackPointLeft();
                 _animator.SetBool("IsRun", true);
                 _sprite.flipX = true;
@@ -133,12 +134,12 @@ public class PlayerHero : MonoBehaviour
             else if (inputY != 0)
             {//движение вверх и вниз
                 _animator.SetBool("IsRun", true);
-                SoundWalkStart();
+                _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundWalkStart();
             }
             else
             {
                 _animator.SetBool("IsRun", false);
-                SoundWalkStop();
+                _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundWalkStop();
             }
         }
     }
@@ -147,43 +148,7 @@ public class PlayerHero : MonoBehaviour
         _animator.SetBool("IsDeath", true);
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
-    }
-    void SoundSwordStart()
-    {
-        if (!isSoundSword)
-        {
-            _audioSource.clip = _attackClip;            
-            _audioSource.Play();
-            isSoundSword = true;
-        }
-    }
-    void SoundSwordStop()
-    {
-        isSoundSword = false;
-        _audioSource.loop = false;
-    }
-    void SoundWalkStart()
-    {
-        if (!isSoundWalk)
-        {
-            _audioSource.clip = _stepClip;
-            _audioSource.loop = true;
-            _audioSource.pitch = 0.85f;
-            _audioSource.volume = 0.5f;
-            _audioSource.Play();
-            isSoundWalk = true;
-        }
-    }
-    void SoundWalkStop()
-    {
-        if (isSoundWalk)
-        {
-            _audioSource.Stop();
-            //_audioSource.clip = null;
-            _audioSource.loop = false;
-            isSoundWalk = false;
-        }
-    }
+    }  
     void MoveAttackPointRight()
     {
         if (_attackPoint.position.x < transform.position.x)

@@ -12,18 +12,16 @@ public class EnemyBandit : MonoBehaviour
 
     [Header("Атака")]
     [SerializeField] private float attackSpeedBandit = 1f;
-    private float timeToAttack = 1f;
     [SerializeField] private int attackDamageBandit = 1;
     [SerializeField] private float attackRangeBandit = 1f;
     [SerializeField] private Transform _attackPoint;
     [SerializeField] private LayerMask _playerLayers;
-    private bool isSoundSword = false;
+    private float timeToAttack = 1f;
 
-    [Header("Звуки")]
-    private bool isSoundWalk = false;
-    private AudioSource _audioSource;
-    [SerializeField] private AudioClip _stepClip;
-    [SerializeField] private AudioClip _attackClip;
+    [Header("Audio Source")]
+    //[SerializeField] private AudioSource _audioStepsOrBlock;
+    [SerializeField] private AudioSource _audioSwordAttack;
+    [SerializeField] private AudioSource _audioHurtOrDeath;
 
     //Компоненты
     private Transform _findPlayer;
@@ -34,17 +32,13 @@ public class EnemyBandit : MonoBehaviour
         _findPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
-        _audioSource = GetComponent<AudioSource>();
 
         moveSpeedBandit = moveSpeedBanditMax;
         healthBandit = maxHealthBandit;
     }
     void Update()
-    {        
-        BanditAttack();
-    }
-    private void FixedUpdate()
     {
+        BanditAttack();
         BanditMove();
     }
     private void OnDrawGizmosSelected()
@@ -52,27 +46,20 @@ public class EnemyBandit : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_attackPoint.position, attackRangeBandit);
     }
-    /*void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Enemy"))
-        {
-            Debug.Log("Enemy enter");
-            transform.position = new Vector2(transform.position.x, transform.position.y);
-        }
-    }*/
     public void BanditTakeDamage(int damage)
     {
         healthBandit -= damage;
         _animator.SetTrigger("Hurt");
+        _audioHurtOrDeath.GetComponent<AHurtOrDeath>().SoundHurtStart(1);
         if (healthBandit <= 0)
             BanditDeath();
     }
     void BanditDeath()
     {
         _animator.SetBool("IsDeath", true);
-        Destroy(this.gameObject, 1);
+        Destroy(gameObject, 1);
         GetComponent<Collider2D>().enabled = false;
-        this.enabled = false;
+        enabled = false;
     }
     void BanditAttack()
     {
@@ -84,11 +71,11 @@ public class EnemyBandit : MonoBehaviour
             if (timeToAttack > attackSpeedBandit)
             {
                 timeToAttack = 0;
-                SoundSwordStart();
+                _audioSwordAttack.GetComponent<ASwordAttack>().SoundSwordStart();
                 _animator.SetTrigger("Attack");
                 enemy.GetComponent<PlayerHero>().HeroTakeDamage(attackDamageBandit);
             }
-            else SoundSwordStop();
+            _audioSwordAttack.GetComponent<ASwordAttack>().SoundSwordStop();
         }
     }
     void BanditMove()
@@ -105,12 +92,12 @@ public class EnemyBandit : MonoBehaviour
                 EnemyNearPlayerStop();
                 _sprite.flipX = false;
             }
-             else if (transform.position.x > _findPlayer.position.x)
-             {//игрок слева
+            else if (transform.position.x > _findPlayer.position.x)
+            {//игрок слева
                 MoveAttackPointLeft();
                 EnemyNearPlayerStop();
                 _sprite.flipX = true;
-             }
+            }
         }
         else
         {
@@ -120,12 +107,12 @@ public class EnemyBandit : MonoBehaviour
     }
     void EnemyNearPlayerStop()
     {//остановка анимации бега рядом с игроком
-        if (Math.Abs(transform.position.x - _findPlayer.position.x) < 1.5f 
-            && Math.Abs(transform.position.y - _findPlayer.position.y) < 1.5f)
+        if (Math.Abs(transform.position.x - _findPlayer.position.x) < 1.5f
+            && Math.Abs(transform.position.y - _findPlayer.position.y) < 1f)
         {
             moveSpeedBandit = 0;
             _animator.SetBool("IsRun", false);
-        }            
+        }
         else
         {
             moveSpeedBandit = moveSpeedBanditMax;
@@ -147,42 +134,5 @@ public class EnemyBandit : MonoBehaviour
             _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 0.5f,
                 gameObject.transform.position.y);
         }
-    }
-    void SoundWalkStart()
-    {
-        if (!isSoundWalk)
-        {
-            _audioSource.clip = _stepClip;
-            _audioSource.loop = true;
-            _audioSource.pitch = 1.1f;
-            _audioSource.Play();
-            isSoundWalk = true;
-        }
-    }
-    void SoundWalkStop()
-    {
-        if (isSoundWalk)
-        {
-            _audioSource.Stop();
-            _audioSource.clip = null;
-            _audioSource.loop = false;
-            isSoundWalk = false;
-        }
-    }
-    void SoundSwordStart()
-    {
-        if (!isSoundSword)
-        {
-            _audioSource.clip = _attackClip;
-            _audioSource.Play();
-            isSoundSword = true;
-            //возможно добавить питч
-        }
-    }
-    void SoundSwordStop()
-    {
-        isSoundSword = false;
-        _audioSource.clip = null;
-        _audioSource.loop = false;
     }
 }

@@ -77,18 +77,18 @@ public class PlayerHero : MonoBehaviour
         else if (damage > 0)
         {//если враг атакует
             _audioStepsOrBlock.GetComponent<AStepsOrBlock>().SoundBlockStart();
-            //анимация
+            //_animator.SetTrigger("BlockFlash");
         } 
     }
     void HeroAttack()
     {
+        timeToAttack += Time.deltaTime;
         if (!Input.GetKey(KeyCode.E))
         {//Если блок не активен
             Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(_attackPoint.position,
                             attackRangeHero, _enemyLayers);
-            foreach (Collider2D enemy in hitEnemies)
+            foreach (Collider2D enemy in hitEnemies)//проверить на зацикливание
             {
-                timeToAttack += Time.deltaTime;
                 if (timeToAttack > attackSpeedHero)
                 {
                     timeToAttack = 0;

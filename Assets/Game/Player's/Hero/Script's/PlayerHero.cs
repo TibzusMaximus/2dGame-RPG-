@@ -30,14 +30,12 @@ public class PlayerHero : MonoBehaviour
     //Компоненты
     private Animator _animator;
     private SpriteRenderer _sprite;
-    
-    //private Rigidbody2D rb2d;
+    private Rigidbody2D _rb;
 
     void Start()
     {// Debug.Log("Time:" + timeToBlock);
         //Time.timeScale = 1;
-        //rb2d = GetComponent<Rigidbody2D>();
-
+        _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
 
@@ -109,14 +107,13 @@ public class PlayerHero : MonoBehaviour
             //1
             //moveInput = new Vector2(inputX, inputY);
             //moveVelocity = moveInput.normalized * moveSpeedHero;
-            //rb2d.MovePosition(rb2d.position + moveVelocity * Time.deltaTime);
+            //rb.MovePosition(rb2d.position + moveVelocity * Time.deltaTime);
             //2
-            //rb2d.velocity = Vector2.up * moveSpeedHero * inputX;
+            _rb.velocity = new Vector2(inputX * moveSpeedHero,
+                inputY * moveSpeedHero);
             //3
-            //rb2d.velocity = new Vector2(inputX * moveSpeedHero, inputY * moveSpeedHero);
-            //4
-            transform.Translate(moveSpeedHero * Time.deltaTime * inputX * Vector2.right);
-            transform.Translate(moveSpeedHero * Time.deltaTime * inputY * Vector2.up);
+            //transform.Translate(moveSpeedHero * Time.deltaTime * inputX * Vector2.right);
+            //transform.Translate(moveSpeedHero * Time.deltaTime * inputY * Vector2.up);
             if (inputX > 0)
             {//движение вправо
                 MoveAttackPointRight();

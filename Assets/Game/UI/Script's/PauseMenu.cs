@@ -31,5 +31,5 @@ public class PauseMenu : MonoBehaviour
         _DeathMenu.SetActive(isPause);
     }
 
-    public void ExitInMenu() => SceneManager.LoadScene("Menu");
+    public void ExitInMenu() => SceneManager.LoadScene("Menu Scene");
 }

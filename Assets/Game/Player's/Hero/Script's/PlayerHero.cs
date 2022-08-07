@@ -5,6 +5,7 @@ public class PlayerHero : MonoBehaviour
     [Header("Здоровье")]
     [SerializeField] private int maxHealthHero = 5;
     [SerializeField] private HealthBar _healthBar;
+    [SerializeField] private PauseMenu _deathMenu;
     private int healthHero = 0;
 
     [Header("Скорость")]
@@ -26,18 +27,18 @@ public class PlayerHero : MonoBehaviour
     //[Header("Защита")]
     //[SerializeField] private float blockRetention = 0f;//время удержания блока
     //static private float timeToBlock = 1.1f; // время ненажатия
-
+    // Debug.Log("Time:" + timeToBlock);
     //Компоненты
     private Animator _animator;
     private SpriteRenderer _sprite;
     private Rigidbody2D _rb;
 
     void Start()
-    {// Debug.Log("Time:" + timeToBlock);
-        //Time.timeScale = 1;
+    {
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _sprite = GetComponent<SpriteRenderer>();
+        
 
         healthHero = maxHealthHero;
         _healthBar.SetMaxHealth(maxHealthHero);
@@ -48,6 +49,7 @@ public class PlayerHero : MonoBehaviour
         HeroAttack();
         HeroBlockAttack();
     }
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -85,8 +87,8 @@ public class PlayerHero : MonoBehaviour
         {//Если блок не активен
             Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(_attackPoint.position,
                             attackRangeHero, _enemyLayers);
-            foreach (Collider2D enemy in hitEnemies)//проверить на зацикливание
-            {
+            foreach (Collider2D enemy in hitEnemies)
+            {//проверить на зацикливание, добавить сильный удар
                 if (timeToAttack > attackSpeedHero)
                 {
                     timeToAttack = 0;
@@ -104,16 +106,7 @@ public class PlayerHero : MonoBehaviour
         float inputY = Input.GetAxis("Vertical");
         if (!Input.GetKey(KeyCode.E))
         {//Если блок не активен
-            //1
-            //moveInput = new Vector2(inputX, inputY);
-            //moveVelocity = moveInput.normalized * moveSpeedHero;
-            //rb.MovePosition(rb2d.position + moveVelocity * Time.deltaTime);
-            //2
-            _rb.velocity = new Vector2(inputX * moveSpeedHero,
-                inputY * moveSpeedHero);
-            //3
-            //transform.Translate(moveSpeedHero * Time.deltaTime * inputX * Vector2.right);
-            //transform.Translate(moveSpeedHero * Time.deltaTime * inputY * Vector2.up);
+            _rb.velocity = new Vector2(inputX * moveSpeedHero, inputY * moveSpeedHero);
             if (inputX > 0)
             {//движение вправо
                 MoveAttackPointRight();
@@ -143,6 +136,7 @@ public class PlayerHero : MonoBehaviour
     void HeroDeath()
     {
         _animator.SetBool("IsDeath", true);
+        _deathMenu.GetComponent<PauseMenu>().DeathMenuActivate();
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
     }  
@@ -163,3 +157,11 @@ public class PlayerHero : MonoBehaviour
         }
     }
 }
+//Варианты движения
+//1
+//moveInput = new Vector2(inputX, inputY);
+//moveVelocity = moveInput.normalized * moveSpeedHero;
+//rb.MovePosition(rb2d.position + moveVelocity * Time.deltaTime);
+//2
+//transform.Translate(moveSpeedHero * Time.deltaTime * inputX * Vector2.right);
+//transform.Translate(moveSpeedHero * Time.deltaTime * inputY * Vector2.up);

@@ -124,7 +124,7 @@ public class EnemyBandit : MonoBehaviour
         if (_attackPoint.position.x < transform.position.x)
         {//Поворот зоны атаки вправо
             _attackPoint.transform.position = new Vector2(gameObject.transform.position.x + 0.5f,
-                gameObject.transform.position.y);
+                gameObject.transform.position.y - 0.3f);
         }
     }
     void MoveAttackPointLeft()
@@ -132,7 +132,7 @@ public class EnemyBandit : MonoBehaviour
         if (_attackPoint.position.x > transform.position.x)
         {//Поворот зоны атаки влево
             _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 0.5f,
-                gameObject.transform.position.y);
+                gameObject.transform.position.y - 0.3f);
         }
     }
 }

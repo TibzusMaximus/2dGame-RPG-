@@ -23,7 +23,7 @@ public class PropsAltar : MonoBehaviour
         targetColor = new Color(1, 1, 1, 1);
 
         timeToTeleport += Time.deltaTime;
-        Debug.Log(timeToTeleport);
+        
         if (timeToTeleport > 1)
         {
             _MAPArena.SetActive(true);

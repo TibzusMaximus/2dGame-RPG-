@@ -26,9 +26,9 @@ public class PauseMenu : MonoBehaviour
     }
     public void DeathMenuActivate()
     {
-        isPause = !isPause;
-        Time.timeScale = isPause ? 0 : 1;
-        _DeathMenu.SetActive(isPause);
+        //isPause = !isPause;
+        //Time.timeScale = isPause ? 0 : 1;
+        _DeathMenu.SetActive(true);
     }
 
     public void ExitInMenu() => SceneManager.LoadScene("Menu Scene");

@@ -225,7 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c44692dc4221794d8b368766f98bad1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealthBandit: 3
+  maxHealthBandit: 2
   moveSpeedBanditMax: 3
   attackSpeedBandit: 2
   attackDamageBandit: 1

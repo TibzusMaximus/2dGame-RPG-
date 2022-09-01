@@ -2,15 +2,16 @@ using UnityEngine;
 using System;
 public class EnemyBandit : MonoBehaviour
 {
-    [Header("Здоровье")]
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
     [SerializeField] private int maxHealthBandit = 3;
     private int healthBandit = 0;
+    [SerializeField] private HealthBar _healthBar;
 
-    [Header("Скорость")]
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
     [SerializeField] private float moveSpeedBanditMax = 3f;
     private float moveSpeedBandit;
 
-    [Header("Атака")]
+    [Header("пїЅпїЅпїЅпїЅпїЅ")]
     [SerializeField] private float attackSpeedBandit = 1f;
     [SerializeField] private int attackDamageBandit = 1;
     [SerializeField] private float attackRangeBandit = 1f;
@@ -23,7 +24,7 @@ public class EnemyBandit : MonoBehaviour
     [SerializeField] private AudioSource _audioSwordAttack;
     [SerializeField] private AudioSource _audioHurtOrDeath;
 
-    //Компоненты
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     private Transform _findPlayer;
     private Animator _animator;
     private SpriteRenderer _sprite;
@@ -35,6 +36,8 @@ public class EnemyBandit : MonoBehaviour
 
         moveSpeedBandit = moveSpeedBanditMax;
         healthBandit = maxHealthBandit;
+
+        _healthBar.SetMaxHealth(maxHealthBandit);
     }
     void Update()
     {
@@ -42,13 +45,14 @@ public class EnemyBandit : MonoBehaviour
         BanditMove();
     }
     private void OnDrawGizmosSelected()
-    {//Отображение зоны атаки
+    {//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_attackPoint.position, attackRangeBandit);
     }
     public void BanditTakeDamage(int damage)
     {
         healthBandit -= damage;
+        _healthBar.SetCurrentHealth(healthBandit);
         _animator.SetTrigger("Hurt");
         _audioHurtOrDeath.GetComponent<AHurtOrDeath>().SoundHurtStart(1);
         if (healthBandit <= 0)
@@ -79,7 +83,7 @@ public class EnemyBandit : MonoBehaviour
         }
     }
     void BanditMove()
-    {//если враг на расстоянии 5 по х и у, то он движется к игроку
+    {//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 5 пїЅпїЅ пїЅ пїЅ пїЅ, пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         if (Math.Abs(transform.position.x - _findPlayer.position.x) < 5
             && Math.Abs(transform.position.y - _findPlayer.position.y) < 5)
         {
@@ -87,13 +91,13 @@ public class EnemyBandit : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position,
                 _findPlayer.position, moveSpeedBandit * Time.deltaTime);
             if (transform.position.x < _findPlayer.position.x)
-            {//игрок справа
+            {//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 MoveAttackPointRight();
                 EnemyNearPlayerStop();
                 _sprite.flipX = false;
             }
             else if (transform.position.x > _findPlayer.position.x)
-            {//игрок слева
+            {//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 MoveAttackPointLeft();
                 EnemyNearPlayerStop();
                 _sprite.flipX = true;
@@ -106,7 +110,7 @@ public class EnemyBandit : MonoBehaviour
         }
     }
     void EnemyNearPlayerStop()
-    {//остановка анимации бега рядом с игроком
+    {//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if (Math.Abs(transform.position.x - _findPlayer.position.x) < 1.5f
             && Math.Abs(transform.position.y - _findPlayer.position.y) < 1f)
         {
@@ -122,7 +126,7 @@ public class EnemyBandit : MonoBehaviour
     void MoveAttackPointRight()
     {
         if (_attackPoint.position.x < transform.position.x)
-        {//Поворот зоны атаки вправо
+        {//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             _attackPoint.transform.position = new Vector2(gameObject.transform.position.x + 0.5f,
                 gameObject.transform.position.y - 0.3f);
         }
@@ -130,7 +134,7 @@ public class EnemyBandit : MonoBehaviour
     void MoveAttackPointLeft()
     {
         if (_attackPoint.position.x > transform.position.x)
-        {//Поворот зоны атаки влево
+        {//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             _attackPoint.transform.position = new Vector2(gameObject.transform.position.x - 0.5f,
                 gameObject.transform.position.y - 0.3f);
         }

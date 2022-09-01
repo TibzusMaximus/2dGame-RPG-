@@ -87,17 +87,23 @@ public class PlayerHero : MonoBehaviour
         {//���� ���� �� �������
             Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(_attackPoint.position,
                             attackRangeHero, _enemyLayers);
-            foreach (Collider2D enemy in hitEnemies)
-            {//��������� �� ������������, �������� ������� ����
+            
+            
+            //��������� �� ������������, �������� ������� ����
                 if (timeToAttack > attackSpeedHero && Input.GetKey(KeyCode.Space))
                 {
                     timeToAttack = 0;
                     _audioSwordAttack.GetComponent<ASwordAttack>().SoundSwordStart();
                     _animator.SetTrigger("Attack");
-                    enemy.GetComponent<EnemyBandit>().BanditTakeDamage(attackDamageHero);
+                    foreach (Collider2D enemy in hitEnemies)
+                    {
+                        enemy.GetComponent<EnemyBandit>().BanditTakeDamage(attackDamageHero);
+                    }
                 }
                 else _audioSwordAttack.GetComponent<ASwordAttack>().SoundSwordStop();
-            }
+            
+            
+
         }
     }
     void HeroMove()
